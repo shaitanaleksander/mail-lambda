@@ -2,58 +2,66 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Upcoming Interview Details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interview Session Confirmed - Skillzzy</title>
   <link rel="stylesheet" type="text/css" href="../email-styles.css">
 </head>
 <body>
 <div class="container">
-
-  <p>Dear {recipient_first_name}, </p>
-
-  <p>We are pleased to inform you that we have found a suitable candidate for you and your interview has been successfully scheduled.
-    Here are the details:</p>
-
-  <table class="details-table">
-    <tr>
-      <th>Interview Details</th>
-    </tr>
-    <tr>
-      <td><strong>Date and Time:</strong>
-        {interview_datetime} (Kyiv time)
-      </td>
-    </tr>
-    <tr>
-      <td><strong>Candidate Name:</strong> {candidate_first_name} {candidate_last_name}
-      </td>
-    </tr>
-    <tr>
-      <td><strong>Candidate Specialization:</strong> {candidate_specialization}</td>
-    </tr>
-    <tr>
-      <td class="no-border"><strong>Candidate Hard/Soft Skills:</strong>
-        <ul class="skill-list">
-          {candidate_skills}
-        </ul>
-      </td>
-    </tr>
-  </table>
-
-  <p>We sincerely thank you for your dedication and the efforts you put into providing valuable feedback.
-    Your insights are extremely important for selecting the best candidates.</p>
-
-  <p>If you have any questions or need help, contact our support team
-    at <a href="mailto:support@skillzzy.com">support@skillzzy.com</a>.</p>
-
-  <div>
-    <a class="calendar-button"
-       href="{google_calendar_url}"
-       target="_blank">
-      Add to Google Calendar
-    </a>
+  <div class="email-header">
+    <div class="email-logo">Skillzzy</div>
+    <p class="email-subtitle">Your Interview Practice Community</p>
   </div>
-
-  <p>Thank you for using Skillzzy!</p>
-  <p>Best regards,<br/>Ratifire Team</p>
+  
+  <div class="email-content">
+    <h1>New Interview Session! 👨‍💻</h1>
+    
+    <p>Hello {recipient_first_name}! We've found a great candidate who's eager to learn from your expertise. Your upcoming interview session is ready to go!</p>
+    
+    <div class="details-section">
+      <h3>🎯 Session Details</h3>
+      <table class="details-table">
+        <tr>
+          <th>Your Interview Session</th>
+        </tr>
+        <tr>
+          <td><strong>Date and Time:</strong> {interview_datetime} (Kyiv time)</td>
+        </tr>
+        <tr>
+          <td><strong>Candidate:</strong> {candidate_first_name} {candidate_last_name}</td>
+        </tr>
+        <tr>
+          <td><strong>Specialization:</strong> {candidate_specialization}</td>
+        </tr>
+        <tr>
+          <td class="no-border"><strong>Candidate Skills:</strong>
+            <ul class="skill-list">
+              {candidate_skills}
+            </ul>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    <p>Your mentorship and guidance make a real difference in helping developers grow their careers. Thank you for being such a valuable part of our community!</p>
+    
+    <p style="text-align: center;">
+      <a class="calendar-button" href="{google_calendar_url}" target="_blank">
+        📅 Add to Google Calendar
+      </a>
+    </p>
+    
+    <p><strong>Interviewer tip:</strong> Review the candidate's skills beforehand to prepare relevant questions and scenarios that will help them improve.</p>
+  </div>
+  
+  <div class="email-footer">
+    <p>Need support or have questions? We're here to help at <a href="mailto:support@skillzzy.com">support@skillzzy.com</a></p>
+    
+    <p class="email-signature">
+      Thank you for sharing your expertise!<br/>
+      <strong>The Skillzzy Team</strong>
+    </p>
+  </div>
 </div>
 </body>
 </html>
