@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Деталі майбутньої співбесіди</title>
+  <link rel="stylesheet" type="text/css" href="../email-styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p>Шановний(а) {recipient_first_name}, </p>
+
+  <p>Раді повідомити, що ми знайшли для вас відповідного інтерв'юера, і ваше інтерв'ю успішно заплановано.
+    Нижче наведено деталі:</p>
+
+  <table class="details-table">
+    <tr>
+      <th>Деталі інтерв'ю</th>
+    </tr>
+    <tr>
+      <td><strong>Дата та час:</strong>
+        {interview_datetime} (за Києвом)
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Ім'я інтерв'юера:</strong> {interviewer_first_name} {interviewer_last_name}
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Спеціалізація інтерв'юера:</strong> {interviewer_specialization}</td>
+    </tr>
+    <tr>
+      <td><strong>Оцінка soft навичок інтерв'юера:</strong> {interviewer_soft_skill_mark}</td>
+    </tr>
+    <tr>
+      <td><strong>Оцінка hard навичок інтерв'юера:</strong> {interviewer_hard_skill_mark}</td>
+    </tr>
+  </table>
+
+  <p>Ми прагнемо забезпечити вам якісний досвід проходження інтерв’ю. Будь ласка, будьте готові та
+    підключіться в запланований час, адже ваша участь є важливою для того, щоб ми могли підібрати найкращого інтерв’юера.</p>
+
+  <p>Якщо у вас виникли запитання або потрібна додаткова допомога, не соромтеся звертатися до нашої
+    служби підтримки за адресою <a href="mailto:support@skillzzy.com">support@skillzzy.com</a>.</p>
+
+  <div>
+    <a class="calendar-button"
+       href="{google_calendar_url}"
+       target="_blank">
+      Додати в Google Calendar
+    </a>
+  </div>
+
+  <p>Дякуємо, що користуєтеся Skillzzy!</p>
+  <p>З повагою,<br/>Команда Ratifire</p>
+</div>
+</body>
+</html>

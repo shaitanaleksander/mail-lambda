@@ -1,67 +1,38 @@
 import boto3
 import logging
-from typing import Dict, Any, List, Optional
-from jinja2 import Template, TemplateError
+import os
+from typing import Dict, Any, Optional
 from botocore.exceptions import ClientError, NoCredentialsError
 from src.utils.exceptions import EmailServiceError
-from src.utils.config import get_config
 
 logger = logging.getLogger(__name__)
 
 class EmailService:
-    """Service for handling email template rendering and SES sending."""
+    """Service for handling email sending via AWS SES."""
     
     def __init__(self):
         """Initialize SES client."""
         try:
             self.ses_client = boto3.client('ses')
-            self.config = get_config()
+            self.default_from_address = os.environ.get('DEFAULT_FROM_ADDRESS', 'noreply@skillzzy.com')
         except NoCredentialsError:
             logger.error("AWS credentials not found")
             raise EmailServiceError("AWS credentials not configured")
     
-    def render_template(self, template_content: str, template_data: Dict[str, Any]) -> str:
-        """
-        Render email template with provided data using Jinja2.
-        
-        Args:
-            template_content: HTML template content
-            template_data: Data to fill into template
-            
-        Returns:
-            Rendered HTML content
-            
-        Raises:
-            EmailServiceError: If template rendering fails
-        """
-        try:
-            logger.info("Rendering email template")
-            
-            template = Template(template_content)
-            rendered_content = template.render(**template_data)
-            
-            logger.info(f"Successfully rendered template, output size: {len(rendered_content)} chars")
-            return rendered_content
-            
-        except TemplateError as e:
-            raise EmailServiceError(f"Template rendering error: {str(e)}")
-        except Exception as e:
-            raise EmailServiceError(f"Unexpected error during template rendering: {str(e)}")
-    
     def send_email(
         self,
-        to_addresses: List[str],
+        recipient_email: str,
         subject: str,
-        body_html: str,
+        html_content: str,
         from_address: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Send email via AWS SES.
         
         Args:
-            to_addresses: List of recipient email addresses
+            recipient_email: Recipient email address
             subject: Email subject
-            body_html: HTML email body
+            html_content: HTML email body content
             from_address: Sender email address (optional, uses default if not provided)
             
         Returns:
@@ -71,28 +42,28 @@ class EmailService:
             EmailServiceError: If email sending fails
         """
         try:
-            sender = from_address or self.config['default_from_address']
+            sender = from_address or self.default_from_address
             
-            logger.info(f"Sending email to {len(to_addresses)} recipients")
+            logger.info(f"Sending email to {recipient_email}")
             logger.debug(f"From: {sender}, Subject: {subject}")
             
             response = self.ses_client.send_email(
                 Source=sender,
-                Destination={'ToAddresses': to_addresses},
+                Destination={'ToAddresses': [recipient_email]},
                 Message={
                     'Subject': {'Data': subject, 'Charset': 'UTF-8'},
                     'Body': {
-                        'Html': {'Data': body_html, 'Charset': 'UTF-8'}
+                        'Html': {'Data': html_content, 'Charset': 'UTF-8'}
                     }
                 }
             )
             
             message_id = response['MessageId']
-            logger.info(f"Successfully sent email, MessageId: {message_id}")
+            logger.info(f"Successfully sent email to {recipient_email}, MessageId: {message_id}")
             
             return {
                 'message_id': message_id,
-                'recipients': to_addresses,
+                'recipient': recipient_email,
                 'status': 'sent'
             }
             
@@ -109,46 +80,26 @@ class EmailService:
         except Exception as e:
             raise EmailServiceError(f"Unexpected error sending email: {str(e)}")
     
-    def send_bulk_email(
-        self,
-        destinations: List[Dict[str, Any]],
-        subject: str,
-        body_html: str,
-        from_address: Optional[str] = None
-    ) -> List[Dict[str, Any]]:
+    def verify_email_address(self, email: str) -> bool:
         """
-        Send bulk personalized emails via AWS SES.
+        Verify if an email address is verified in SES.
         
         Args:
-            destinations: List of destination dictionaries with email and template data
-            subject: Email subject template
-            body_html: HTML email body template
-            from_address: Sender email address
+            email: Email address to check
             
         Returns:
-            List of send results
+            True if verified, False otherwise
         """
-        results = []
-        
-        for dest in destinations:
-            try:
-                personalized_subject = Template(subject).render(**dest.get('template_data', {}))
-                personalized_body = Template(body_html).render(**dest.get('template_data', {}))
-                
-                result = self.send_email(
-                    to_addresses=[dest['email']],
-                    subject=personalized_subject,
-                    body_html=personalized_body,
-                    from_address=from_address
-                )
-                results.append(result)
-                
-            except Exception as e:
-                logger.error(f"Failed to send email to {dest.get('email', 'unknown')}: {str(e)}")
-                results.append({
-                    'email': dest.get('email'),
-                    'status': 'failed',
-                    'error': str(e)
-                })
-        
-        return results
+        try:
+            response = self.ses_client.get_identity_verification_attributes(
+                Identities=[email]
+            )
+            
+            verification_attrs = response.get('VerificationAttributes', {})
+            email_attrs = verification_attrs.get(email, {})
+            
+            return email_attrs.get('VerificationStatus') == 'Success'
+            
+        except ClientError as e:
+            logger.error(f"Error checking email verification status: {str(e)}")
+            return False

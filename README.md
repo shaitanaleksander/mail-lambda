@@ -1,64 +1,119 @@
 # Email Lambda Function
 
-AWS Lambda function that processes email templates from S3, fills them with data from SQS messages, and sends emails via SES.
+AWS Lambda function that processes email templates from local files, fills them with data from SQS messages, and sends emails via SES.
 
 ## Architecture
 
 ```
-SQS Message → Lambda Function → S3 (Template) → SES (Send Email)
+SQS Message → Lambda Function → Local Templates → SES (Send Email)
 ```
 
 ## Features
 
 - **SQS Integration**: Triggered by SQS messages containing email data
-- **S3 Template Storage**: Retrieves HTML email templates from S3 buckets
-- **Jinja2 Templating**: Renders templates with dynamic data
+- **Local Template Storage**: Uses HTML email templates packaged with the Lambda function
+- **String Formatting**: Simple Python string formatting for template rendering
 - **SES Email Delivery**: Sends emails via AWS Simple Email Service
+- **Multi-language Support**: Templates available in multiple languages (en, ua)
 - **Error Handling**: Comprehensive error handling and logging
-- **Validation**: Email address and message data validation
 
-## Message Format
+## SQS Message Format
 
-SQS messages should contain JSON with the following structure:
+SQS messages should contain JSON in the body with the following structure:
 
 ```json
 {
-  "template_bucket": "my-email-templates",
-  "template_key": "welcome-email.html",
-  "to_addresses": ["user@example.com"],
-  "subject": "Welcome to our service!",
-  "from_address": "noreply@company.com",
+  "template_name": "greeting",
+  "language": "en",
+  "recipient_email": "user@example.com", 
+  "subject": "Welcome to Skillzzy!",
   "template_data": {
-    "user_name": "John Doe",
-    "company_name": "ACME Corp",
-    "activation_url": "https://example.com/activate/123"
+    "user_first_name": "John",
+    "interview_datetime": "2024-01-15 14:30",
+    "google_calendar_url": "https://calendar.google.com/..."
   }
 }
 ```
+
+## Available Templates
+
+- **greeting**: Welcome email for new users
+- **candidate-interview-scheduled**: Interview confirmation for candidates
+- **interviewer-interview-scheduled**: Interview confirmation for interviewers
+- **interview-rejected**: Interview cancellation notification
+- **interview-request-expired**: Interview request expiration notice
+
+Each template is available in:
+- `en` - English
+- `ua` - Ukrainian
 
 ## Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `DEFAULT_FROM_ADDRESS` | Default sender email address | `noreply@example.com` |
-| `AWS_REGION` | AWS region for services | `us-east-1` |
+| `DEFAULT_FROM_ADDRESS` | Default sender email address | `noreply@skillzzy.com` |
 | `LOG_LEVEL` | Logging level | `INFO` |
-| `MAX_RECIPIENTS_PER_EMAIL` | Maximum recipients per email | `50` |
 
-## Template Example
+## Template Variables by Template Type
 
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ subject }}</title>
-</head>
-<body>
-    <h1>Welcome {{ user_name }}!</h1>
-    <p>Thank you for joining {{ company_name }}.</p>
-    <a href="{{ activation_url }}">Activate your account</a>
-</body>
-</html>
+### 1. **greeting** - Welcome email
+```json
+{
+  "template_data": {
+    "user_first_name": "John"
+  }
+}
+```
+
+### 2. **candidate-interview-scheduled** - Interview confirmation for candidates
+```json
+{
+  "template_data": {
+    "recipient_first_name": "Jane",
+    "interview_datetime": "2024-01-15 14:30",
+    "interviewer_first_name": "Mike",
+    "interviewer_last_name": "Johnson", 
+    "interviewer_specialization": "Frontend Development",
+    "interviewer_soft_skill_mark": "9",
+    "interviewer_hard_skill_mark": "8",
+    "google_calendar_url": "https://calendar.google.com/..."
+  }
+}
+```
+
+### 3. **interviewer-interview-scheduled** - Interview confirmation for interviewers
+```json
+{
+  "template_data": {
+    "recipient_first_name": "Mike",
+    "interview_datetime": "2024-01-15 14:30", 
+    "candidate_first_name": "Jane",
+    "candidate_last_name": "Smith",
+    "candidate_specialization": "Frontend Development",
+    "candidate_skills": "<li>JavaScript</li><li>React</li><li>Node.js</li>",
+    "google_calendar_url": "https://calendar.google.com/..."
+  }
+}
+```
+
+### 4. **interview-rejected** - Interview cancellation
+```json
+{
+  "template_data": {
+    "recipient_first_name": "Jane",
+    "rejection_user_first_name": "Mike",
+    "scheduled_time": "2024-01-15 14:30"
+  }
+}
+```
+
+### 5. **interview-request-expired** - Request expiration notice
+```json
+{
+  "template_data": {
+    "user_first_name": "John"
+  }
+}
 ```
 
 ## Deployment
@@ -73,7 +128,7 @@ SQS messages should contain JSON with the following structure:
    zip -r lambda-deployment.zip .
    ```
 
-3. Deploy to AWS Lambda with appropriate IAM permissions for S3, SQS, and SES.
+3. Deploy to AWS Lambda with appropriate IAM permissions for SQS and SES.
 
 ## IAM Permissions
 
@@ -84,17 +139,11 @@ The Lambda function requires the following permissions:
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Effect": "Allow",
-      "Action": [
-        "s3:GetObject"
-      ],
-      "Resource": "arn:aws:s3:::your-template-bucket/*"
-    },
-    {
       "Effect": "Allow", 
       "Action": [
         "ses:SendEmail",
-        "ses:SendRawEmail"
+        "ses:SendRawEmail",
+        "ses:GetIdentityVerificationAttributes"
       ],
       "Resource": "*"
     },
@@ -106,7 +155,50 @@ The Lambda function requires the following permissions:
         "sqs:GetQueueAttributes"
       ],
       "Resource": "arn:aws:sqs:*:*:your-queue-name"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream", 
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:*"
     }
   ]
 }
 ```
+
+## Complete SQS Message Examples
+
+### Example 1: Greeting Email
+```json
+{
+  "template_name": "greeting",
+  "language": "en",
+  "recipient_email": "john.doe@example.com",
+  "subject": "Welcome to Skillzzy!",
+  "template_data": {
+    "user_first_name": "John"
+  }
+}
+```
+
+### Example 2: Interview Scheduled (Candidate)
+```json
+{
+  "template_name": "candidate-interview-scheduled",
+  "language": "en", 
+  "recipient_email": "jane.smith@example.com",
+  "subject": "Your Interview is Scheduled",
+  "template_data": {
+    "recipient_first_name": "Jane",
+    "interview_datetime": "2024-01-15 14:30",
+    "interviewer_first_name": "Mike",
+    "interviewer_last_name": "Johnson",
+    "interviewer_specialization": "Frontend Development",
+    "interviewer_soft_skill_mark": "9",
+    "interviewer_hard_skill_mark": "8", 
+    "google_calendar_url": "https://calendar.google.com/calendar/u/0/r/eventedit?text=Interview+with+Mike+Johnson"
+  }
+}

@@ -1,0 +1,89 @@
+/* Common styles for all email templates */
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  background-color: #f9f9f9;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.details-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.details-table th,
+.details-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.details-table th {
+  background-color: #f2f2f2;
+}
+
+.skill-list {
+  list-style-type: none;
+  padding-left: 20px;
+  margin: 0;
+}
+
+.skill-list li::before {
+  content: "- ";
+}
+
+.no-border {
+  border: none;
+}
+
+.calendar-button {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #4285F4;
+  color: #ffffff;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.calendar-button:hover {
+  background-color: #3367D6;
+}
+
+/* Email-specific styles */
+p {
+  margin-bottom: 15px;
+}
+
+ul {
+  margin-bottom: 15px;
+}
+
+li {
+  margin-bottom: 5px;
+}
+
+a {
+  color: #4285F4;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+strong {
+  font-weight: bold;
+}
