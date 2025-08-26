@@ -1,0 +1,29 @@
+# Copy this file to terraform.tfvars and customize for your environment
+
+# AWS Configuration
+aws_region = "eu-north-1"
+
+# Project Configuration
+project_name = "skillzzy-mail"
+default_from_address = "noreply@skillzzy.com"
+
+# Lambda Configuration
+lambda_runtime = "python3.9"
+lambda_timeout = 300
+lambda_memory_size = 256
+log_level = "INFO"
+log_retention_days = 14
+
+# SQS Configuration  
+max_receive_count = 3
+sqs_batch_size = 10
+sqs_batching_window = 5
+sqs_parallelization_factor = 2
+
+# Resource Tags
+tags = {
+  Project     = "skillzzy-mail"
+  Environment = "production"
+  ManagedBy   = "terraform"
+  Owner       = "your-team"
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Upcoming Interview Details</title>
+  <link rel="stylesheet" type="text/css" href="../email-styles.css">
+</head>
+<body>
+<div class="container">
+
+  <p>Dear {recipient_first_name}, </p>
+
+  <p>We are pleased to inform you that we have found a suitable candidate for you and your interview has been successfully scheduled.
+    Here are the details:</p>
+
+  <table class="details-table">
+    <tr>
+      <th>Interview Details</th>
+    </tr>
+    <tr>
+      <td><strong>Date and Time:</strong>
+        {interview_datetime} (Kyiv time)
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Candidate Name:</strong> {candidate_first_name} {candidate_last_name}
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Candidate Specialization:</strong> {candidate_specialization}</td>
+    </tr>
+    <tr>
+      <td class="no-border"><strong>Candidate Hard/Soft Skills:</strong>
+        <ul class="skill-list">
+          {candidate_skills}
+        </ul>
+      </td>
+    </tr>
+  </table>
+
+  <p>We sincerely thank you for your dedication and the efforts you put into providing valuable feedback.
+    Your insights are extremely important for selecting the best candidates.</p>
+
+  <p>If you have any questions or need help, contact our support team
+    at <a href="mailto:support@skillzzy.com">support@skillzzy.com</a>.</p>
+
+  <div>
+    <a class="calendar-button"
+       href="{google_calendar_url}"
+       target="_blank">
+      Add to Google Calendar
+    </a>
+  </div>
+
+  <p>Thank you for using Skillzzy!</p>
+  <p>Best regards,<br/>Ratifire Team</p>
+</div>
+</body>
+</html>
