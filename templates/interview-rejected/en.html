@@ -2,22 +2,47 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Interview Cancelled</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interview Rescheduled - Skillzzy</title>
   <link rel="stylesheet" type="text/css" href="../email-styles.css">
 </head>
 <body>
 <div class="container">
-  <p>Dear {recipient_first_name}, </p>
-
-  <p>The interview with {rejection_user_first_name}, which was scheduled for {scheduled_time},
-    has been cancelled. But don't worry! We are already looking for a new candidate just for you, a new interview will be created soon and
-      we will promptly notify you.</p>
-
-  <p>If you have any questions or need additional assistance, please contact our support team at
-    <a href="mailto:skillzzy.noreply@gmail.com">support@skillzzy.com</a>.</p>
-
-  <p>Thank you for using Skillzzy!</p>
-  <p>Best regards,<br/>Ratifire Team</p>
+  <div class="email-header">
+    <div class="email-logo">Skillzzy</div>
+    <p class="email-subtitle">Your Interview Practice Community</p>
+  </div>
+  
+  <div class="email-content">
+    <h1>Interview Update 📅</h1>
+    
+    <p>Hi {recipient_first_name},</p>
+    
+    <p>We wanted to let you know that your interview with {rejection_user_first_name}, which was scheduled for {scheduled_time}, has been cancelled.</p>
+    
+    <div class="details-section">
+      <h3>🔄 What's Next?</h3>
+      <p><strong>Don't worry!</strong> These things happen, and we're already working on finding you another great match. Here's what we're doing:</p>
+      <ul class="skill-list">
+        <li>Searching for a new interviewer with similar expertise</li>
+        <li>Prioritizing your request in our matching system</li>
+        <li>We'll notify you as soon as a new session is scheduled</li>
+      </ul>
+    </div>
+    
+    <p>We understand this might be disappointing, but every opportunity to practice is valuable. Your next interview will be even better!</p>
+    
+    <p><strong>In the meantime:</strong> Consider reviewing your profile or exploring our community resources to make the most of your preparation time.</p>
+  </div>
+  
+  <div class="email-footer">
+    <p>Questions or need support? We're here to help at <a href="mailto:support@skillzzy.com">support@skillzzy.com</a></p>
+    
+    <p class="email-signature">
+      We'll have you matched again soon!<br/>
+      <strong>The Skillzzy Team</strong>
+    </p>
+  </div>
 </div>
 </body>
 </html>
