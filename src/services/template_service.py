@@ -92,8 +92,11 @@ class TemplateService:
             # Handle special case for skill lists (convert list to HTML)
             processed_data = self._process_template_data(template_data.copy())
             
+            # Inline CSS styles for email compatibility
+            rendered_content = self._inline_styles(template_content)
+            
             # Use string format to replace placeholders
-            rendered_content = template_content.format(**processed_data)
+            rendered_content = rendered_content.format(**processed_data)
             
             return rendered_content
             
@@ -132,6 +135,95 @@ class TemplateService:
                 template_data[key] = str(value)
         
         return template_data
+    
+    def _inline_styles(self, template_content: str) -> str:
+        """
+        Convert external CSS links to inline styles for email compatibility.
+        
+        Args:
+            template_content: HTML content with potential CSS links
+            
+        Returns:
+            HTML content with inlined styles
+        """
+        # Remove CSS link tags and replace with inline styles
+        if '<link rel="stylesheet"' in template_content:
+            # Remove the link tag
+            import re
+            template_content = re.sub(r'<link[^>]*rel="stylesheet"[^>]*>', '', template_content)
+            
+            # Load and inline the CSS
+            template_content = self._apply_greeting_styles(template_content)
+        
+        return template_content
+    
+    def _apply_greeting_styles(self, template_content: str) -> str:
+        """Apply inline styles for greeting templates with mobile optimization."""
+        # Add viewport meta tag for mobile responsiveness
+        if '<meta name="viewport"' not in template_content:
+            template_content = template_content.replace(
+                '<meta charset="UTF-8">',
+                '<meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">'
+            )
+        
+        # Replace class-based styling with mobile-optimized inline styles
+        template_content = template_content.replace(
+            '<div class="greeting-container">',
+            '<div style="max-width: 600px; width: 100%; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Arial, sans-serif; line-height: 1.6; color: #333333;">'
+        )
+        
+        template_content = template_content.replace(
+            '<div class="greeting-header">',
+            '<div style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 24px 20px 20px; text-align: center; color: white;">'
+        )
+        
+        template_content = template_content.replace(
+            '<div class="greeting-logo">',
+            '<div style="font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px;">'
+        )
+        
+        template_content = template_content.replace(
+            '<p class="greeting-subtitle">',
+            '<p style="font-size: 14px; opacity: 0.9; margin: 0;">'
+        )
+        
+        template_content = template_content.replace(
+            '<div class="greeting-content">',
+            '<div style="padding: 24px 20px 20px;">'
+        )
+        
+        template_content = template_content.replace(
+            '<div class="greeting-tips">',
+            '<div style="background: #f0f9ff; border-radius: 6px; padding: 16px; margin: 20px 0; border-left: 3px solid #4f46e5;">'
+        )
+        
+        template_content = template_content.replace(
+            '<a href="https://skillzzy.com/dashboard" class="greeting-button">',
+            '<a href="https://skillzzy.com/dashboard" style="display: inline-block; background: #4f46e5; color: white !important; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 16px; margin: 16px 0; width: auto; text-align: center;">'
+        )
+        
+        template_content = template_content.replace(
+            '<div class="greeting-footer">',
+            '<div style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">'
+        )
+        
+        template_content = template_content.replace(
+            '<p class="greeting-signature">',
+            '<p style="color: #374151; font-weight: 600; margin: 20px 0 0;">'
+        )
+        
+        # Style basic elements with mobile optimization
+        template_content = template_content.replace('<h1>', '<h1 style="color: #1f2937; font-size: 20px; font-weight: 600; margin: 0 0 16px; text-align: center; line-height: 1.3;">')
+        template_content = template_content.replace('<h3>', '<h3 style="color: #1f2937; font-size: 16px; font-weight: 600; margin: 0 0 12px; line-height: 1.3;">')
+        template_content = template_content.replace('<p>', '<p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin: 0 0 16px;">')
+        template_content = template_content.replace('<li>', '<li style="color: #374151; font-size: 14px; margin: 6px 0; line-height: 1.5;">')
+        template_content = template_content.replace('<ul>', '<ul style="padding-left: 20px; margin: 12px 0;">')
+        template_content = template_content.replace('<a href="mailto:', '<a style="color: #4f46e5; text-decoration: none; font-weight: 500; word-break: break-word;" href="mailto:')
+        
+        # Add body styling for mobile
+        template_content = template_content.replace('<body>', '<body style="margin: 0; padding: 10px; background-color: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Arial, sans-serif; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">')
+        
+        return template_content
     
     def list_available_templates(self) -> Dict[str, list]:
         """
