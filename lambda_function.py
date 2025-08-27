@@ -44,7 +44,9 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         for record in event.get('Records', []):
             try:
                 # Parse the SQS message body
-                message_body = json.loads(record['body'])
+                message_body = record['body']
+                if isinstance(message_body, str):
+                    message_body = json.loads(message_body)
                 
                 logger.info(f"Processing message: {record['messageId']}")
                 logger.info(f"Message body: {message_body}")
